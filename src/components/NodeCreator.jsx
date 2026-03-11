@@ -1,3 +1,4 @@
+// NodeCreator.jsx
 import React, { useState } from 'react';
 import { getAllCharacters } from '../utils/characterMap';
 

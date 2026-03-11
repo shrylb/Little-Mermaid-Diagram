@@ -1,3 +1,4 @@
+// DiagramBuilder.jsx
 import React, { useState } from 'react';
 import NodeCreator from './NodeCreator';
 import DiagramPreview from './DiagramPreview';
@@ -11,7 +12,7 @@ export default function DiagramBuilder() {
   const [showLegend, setShowLegend] = useState(true);
 
   const handleNodeCreate = (newNode) => {
-    setNodes([...nodes, newNode]);
+    setNodes((prev) => [...prev, newNode]);
   };
 
   const handleConnect = (toNodeId) => {
@@ -19,27 +20,24 @@ export default function DiagramBuilder() {
       setFromNode(toNodeId);
       return;
     }
-
     if (fromNode === toNodeId) {
       alert('Cannot connect a node to itself!');
       return;
     }
-
     const newConnection = {
       from: fromNode,
       to: toNodeId,
       label: connectionLabel,
       id: `conn_${Date.now()}`
     };
-
-    setConnections([...connections, newConnection]);
+    setConnections((prev) => [...prev, newConnection]);
     setFromNode(null);
     setConnectionLabel('');
   };
 
   const handleRemoveNode = (nodeId) => {
-    setNodes(nodes.filter(n => n.id !== nodeId));
-    setConnections(connections.filter(c => c.from !== nodeId && c.to !== nodeId));
+    setNodes((prev) => prev.filter(n => n.id !== nodeId));
+    setConnections((prev) => prev.filter(c => c.from !== nodeId && c.to !== nodeId));
   };
 
   const handleClear = () => {
@@ -51,107 +49,128 @@ export default function DiagramBuilder() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-ocean-500 via-purple-500 to-coral-500 p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-5xl font-bold text-white drop-shadow-lg mb-2">
-            🧜‍♀️ Mermaid Diagram Builder
-          </h1>
-          <p className="text-xl text-white drop-shadow-md">
-            Create beautiful diagrams using Little Mermaid characters!
-          </p>
+    <>
+
+      <div className="diagram-root">
+        {/* Ambient bubbles */}
+        <div className="bubbles" aria-hidden="true">
+          {[...Array(10)].map((_, i) => <div key={i} className="bubble" />)}
         </div>
 
-        {/* Toggle Legend */}
-        <div className="text-center mb-6">
-          <button
-            onClick={() => setShowLegend(!showLegend)}
-            className="btn-secondary"
-          >
-            {showLegend ? '🙈 Hide' : '👀 Show'} Legend
-          </button>
-        </div>
+        {/* Seaweed SVG left */}
+        <svg className="seaweed-left" viewBox="0 0 80 300" fill="none" aria-hidden="true">
+          <path d="M40 300 Q20 260 40 220 Q60 180 40 140 Q20 100 40 60 Q55 30 45 0" stroke="rgba(0,180,120,0.35)" strokeWidth="6" strokeLinecap="round" fill="none"/>
+          <path d="M25 280 Q5 240 25 200 Q45 165 28 130" stroke="rgba(0,150,100,0.2)" strokeWidth="4" strokeLinecap="round" fill="none"/>
+        </svg>
+        <svg className="seaweed-right" viewBox="0 0 80 300" fill="none" aria-hidden="true">
+          <path d="M40 300 Q20 260 40 220 Q60 180 40 140 Q20 100 40 60 Q55 30 45 0" stroke="rgba(0,180,120,0.35)" strokeWidth="6" strokeLinecap="round" fill="none"/>
+          <path d="M25 280 Q5 240 25 200 Q45 165 28 130" stroke="rgba(0,150,100,0.2)" strokeWidth="4" strokeLinecap="round" fill="none"/>
+        </svg>
 
-        {/* Legend Section */}
-        {showLegend && <CharacterLegend />}
-
-        {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
-          {/* Left Panel - Node Creator */}
-          <div className="lg:col-span-1 space-y-4">
-            <NodeCreator onNodeCreate={handleNodeCreate} />
-
-            {/* Current Nodes */}
-            <div className="card-ocean">
-              <h3 className="text-lg font-bold text-ocean-900 mb-3">📍 Current Nodes ({nodes.length})</h3>
-              <div className="space-y-2 max-h-64 overflow-y-auto">
-                {nodes.length === 0 ? (
-                  <p className="text-ocean-700 italic">No nodes yet. Create one above!</p>
-                ) : (
-                  nodes.map((node) => (
-                    <div
-                      key={node.id}
-                      className="bg-white rounded p-2 flex items-center justify-between hover:bg-ocean-50 transition"
-                    >
-                      <div>
-                        <span className="text-2xl">{node.emoji}</span>
-                        <span className="ml-2 font-semibold text-ocean-900">{node.label}</span>
-                      </div>
-                      <button
-                        onClick={() => handleRemoveNode(node.id)}
-                        className="text-red-600 hover:text-red-800 font-bold"
-                      >
-                        ✕
-                      </button>
-                    </div>
-                  ))
-                )}
-              </div>
+        <div className="content-wrap">
+          {/* ── Header ── */}
+          <header className="site-header">
+            <h1>🧜‍♀️ Mermaid Diagram Builder</h1>
+            <div className="crown-divider">
+              <span className="line" />
+              <span style={{ fontSize: '1.1rem' }}>✦</span>
+              <span className="line right" />
             </div>
+            <p>Create enchanted diagrams beneath the sea</p>
+          </header>
 
-            {/* Connection Label */}
-            {fromNode && (
-              <div className="card-ocean">
-                <h3 className="text-sm font-bold text-ocean-900 mb-2">🔗 Connecting Node</h3>
-                <input
-                  type="text"
-                  value={connectionLabel}
-                  onChange={(e) => setConnectionLabel(e.target.value)}
-                  placeholder="Connection label (optional)"
-                  className="w-full p-2 border-2 border-ocean-400 rounded-lg mb-2"
-                />
-                <button
-                  onClick={() => setFromNode(null)}
-                  className="btn-secondary w-full text-sm"
-                >
-                  Cancel Connection
-                </button>
-              </div>
-            )}
-
-            {/* Clear Button */}
-            <button
-              onClick={handleClear}
-              className="btn-primary w-full"
-            >
-              🗑️ Clear All
+          {/* ── Legend Toggle ── */}
+          <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+            <button className="btn-legend" onClick={() => setShowLegend(!showLegend)}>
+              {showLegend ? 'Hide' : 'Show'} Character Legend
             </button>
           </div>
 
-          {/* Right Panel - Diagram Preview */}
-          <div className="lg:col-span-2">
-            <DiagramPreview nodes={nodes} connections={connections} />
-          </div>
-        </div>
+          {/* ── Legend ── */}
+          {showLegend && <CharacterLegend />}
 
-        {/* Footer */}
-        <div className="text-center mt-12 text-white">
-          <p className="text-sm drop-shadow-md">
-            Made with ❤️ for diagrams • Powered by Mermaid & Tailwind CSS
-          </p>
+          {/* ── Main Grid ── */}
+          <div className="main-grid" style={{ marginTop: '1.5rem' }}>
+
+            {/* Left Panel */}
+            <div className="left-panel">
+
+              {/* Node Creator (unchanged component, just wrapped) */}
+              <NodeCreator onNodeCreate={handleNodeCreate} />
+
+              {/* Current Nodes */}
+              <div className="sea-card">
+                <h3>
+                  Current Nodes
+                  <span className="count-pill">{nodes.length}</span>
+                </h3>
+                {nodes.length > 0 && (
+                  <p className="empty-state" style={{ marginBottom: '0.5rem', fontStyle: 'normal', opacity: 0.7 }}>
+                    {fromNode ? 'Select another node to connect, or cancel below.' : 'Click a node to start a connection.'}
+                  </p>
+                )}
+                <div className="node-list">
+                  {nodes.length === 0
+                    ? <p className="empty-state">No nodes yet — create one above.</p>
+                    : nodes.map(node => (
+                        <div
+                          key={node.id}
+                          className={`node-item${fromNode === node.id ? ' node-item--active' : ''}`}
+                          onClick={() => handleConnect(node.id)}
+                          style={{ cursor: 'pointer' }}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <span style={{ fontSize: '1.3rem' }}>{node.emoji}</span>
+                            <span className="node-name">{node.label}</span>
+                          </div>
+                          <button
+                            className="remove-btn"
+                            onClick={(e) => { e.stopPropagation(); handleRemoveNode(node.id); }}
+                            title="Remove node"
+                          >✕</button>
+                        </div>
+                      ))
+                  }
+                </div>
+              </div>
+
+              {fromNode && (
+                <div className="sea-card">
+                  <div className="connecting-badge">
+                    <span className="pulse-dot" />
+                    Connecting from "{nodes.find(n => n.id === fromNode)?.label}"
+                  </div>
+                  <input
+                    type="text"
+                    className="sea-input"
+                    value={connectionLabel}
+                    onChange={e => setConnectionLabel(e.target.value)}
+                    placeholder="Connection label (optional)"
+                  />
+                  <button className="btn-secondary" onClick={() => setFromNode(null)}>
+                    Cancel Connection
+                  </button>
+                </div>
+              )}
+
+              {/* Clear All */}
+              <button className="btn-primary" onClick={handleClear}>
+                Clear All
+              </button>
+            </div>
+
+            {/* Right Panel */}
+            <div>
+              <DiagramPreview nodes={nodes} connections={connections} />
+            </div>
+          </div>
+
+          {/* ── Footer ── */}
+          <footer className="site-footer">
+            ✦ &nbsp; Part of your world — powered by Mermaid &amp; Tailwind CSS &nbsp; ✦
+          </footer>
         </div>
       </div>
-    </div>
+    </>
   );
 }
