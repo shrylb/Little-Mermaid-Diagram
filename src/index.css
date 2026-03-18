@@ -101,17 +101,18 @@ html, body, #root {
   }
 
   .content-wrap {
-    position: relative;
-    z-index: 1;
-    max-width: 1280px;
+    /* position: relative;
+    z-index: 1; */
+    max-width: 1400px;
     margin: 0 auto;
-    padding: 2rem 1.5rem 3rem;
+    padding: 2rem 0rem;
   }
 
   .main-grid {
     display: grid;
     gap: 2rem;
     grid-template-columns: 1fr;
+    justify-content: center; 
   }
   @media (min-width: 1024px) {
     .main-grid { grid-template-columns: 360px 1fr; }

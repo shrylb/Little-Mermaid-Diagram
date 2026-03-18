@@ -51,11 +51,11 @@ export default function DiagramPreview({ nodes, connections }) {
           {nodes.length === 0 ? (
             <p className="empty-state">Add nodes on the left to build your diagram.</p>
           ) : error ? (
-            <p style={{ color: 'hsl(350 95% 72%)', fontSize: '0.85rem', textAlign: 'center', padding: '1rem' }}>
+            <p style={{ color: 'white', fontSize: '0.85rem', textAlign: 'center', padding: '1rem' }}>
               Render error: {error}
             </p>
           ) : (
-            <div ref={containerRef} style={{ display: 'flex', justifyContent: 'center' }} />
+            <div ref={containerRef} style={{ color:'white', display: 'flex', justifyContent: 'center' }} />
           )}
         </div>
       </div>
